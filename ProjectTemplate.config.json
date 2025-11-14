@@ -1,0 +1,11 @@
+{
+"rules": {
+  ".mat": "Assets/Materials",
+  ".png": "Assets/Textures",
+  ".fbx": "Assets/Models"
+},
+"exclusions": [
+  "Assets/ThirdParty",
+  "Assets/TutorialInfo"
+]
+}

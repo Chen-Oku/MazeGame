@@ -1,0 +1,7 @@
+Project Template Organize Report - 13/11/2025 11:08:50 a. m.
+Mode: run
+Planned moves: 0
+--- Planned ---
+--- Results ---
+Moved: 0
+Conflicts: 0
