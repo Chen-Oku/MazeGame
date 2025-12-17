@@ -17,7 +17,7 @@ public class MazeGenerator : MonoBehaviour
     private MazeCell[,] _mazeGrid;
 
 
-    IEnumerator Start()
+    void Start()
     {
         _mazeGrid = new MazeCell[_mazeWitdth, _mazeDepth];
 
@@ -29,59 +29,79 @@ public class MazeGenerator : MonoBehaviour
             }
         }
 
-        // GenerateMaze();
-        // DrawMaze();
+        // Start generation from (0,0)
+        if (_mazeWitdth > 0 && _mazeDepth > 0)
+        {
+            GenerateMaze(null, _mazeGrid[0, 0]);
+        }
     }
 
-    private IEnumerator GenerateMaze(MazeCell previousCell, MazeCell currentCell)
+    private void GenerateMaze(MazeCell previousCell, MazeCell currentCell)
     {
+        if (currentCell == null) return;
+
         currentCell.Visit();
-        ClearWalls(previousCell, currentCell);
+        if (previousCell != null)
+        {
+            ClearWalls(previousCell, currentCell);
+        }
+
+        // Continue exploring until there are no unvisited neighbors
+        var neighbors = GetUnvisitedCells(currentCell).ToList();
+        while (neighbors.Count > 0)
+        {
+            var next = neighbors[Random.Range(0, neighbors.Count)];
+            GenerateMaze(currentCell, next);
+            neighbors = GetUnvisitedCells(currentCell).ToList();
+        }
     }
     private MazeCell GetNextUnvisitedCell(MazeCell currentCell)
     {
-        var unvisitedCells = GetUnvisitedCells(currentCell);
-
-        unvisitedCells.OrderBy(c => Random.Range(1, 100)); 
+        var unvisitedCells = GetUnvisitedCells(currentCell).ToList();
+        if (unvisitedCells.Count == 0) return null;
+        return unvisitedCells[Random.Range(0, unvisitedCells.Count)];
     }
 
     private IEnumerable<MazeCell> GetUnvisitedCells(MazeCell currentCell)
     {
         int x = (int)currentCell.transform.position.x;
         int z = (int)currentCell.transform.position.z;
+        var list = new List<MazeCell>();
 
         if (x + 1 < _mazeWitdth)
         {
-            var cellToRieght = _mazeGrid(x + 1, z);
-            if (cellToRieght.IsVisited == false)
+            var cellToRight = _mazeGrid[x + 1, z];
+            if (cellToRight != null && cellToRight.IsVisited == false)
             {
-                return cellToRieght;
+                list.Add(cellToRight);
             }
         }
         if (x - 1 >= 0)
         {
-            var cellToLeft = _mazeGrid(x - 1, z);
-            if (cellToLeft.IsVisited == false)
+            var cellToLeft = _mazeGrid[x - 1, z];
+            if (cellToLeft != null && cellToLeft.IsVisited == false)
             {
-                return cellToLeft;
+                list.Add(cellToLeft);
             }
         }
         if (z + 1 < _mazeDepth)
         {
-            var cellToFront = _mazeGrid(x, z + 1);
-            if (cellToFront.IsVisited == false)
+            var cellToFront = _mazeGrid[x, z + 1];
+            if (cellToFront != null && cellToFront.IsVisited == false)
             {
-                return cellToFront;
+                list.Add(cellToFront);
             }
         }
         if (z - 1 >= 0)
         {
-            var cellToBack = _mazeGrid(x, z - 1);
-            if (cellToBack.IsVisited == false)
+            var cellToBack = _mazeGrid[x, z - 1];
+            if (cellToBack != null && cellToBack.IsVisited == false)
             {
-                return cellToBack;
+                list.Add(cellToBack);
             }
         }
+
+        return list;
     }
 
 
